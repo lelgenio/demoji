@@ -2,7 +2,7 @@ use std::{io::Write, time::Duration};
 
 use arboard::SetExtLinux;
 use clap::Parser;
-use emoji;
+use emoji::lookup_by_glyph::iter_emoji;
 
 /// Simple program to list all emojis
 #[derive(Parser, Debug)]
@@ -39,7 +39,7 @@ fn main() {
     }
 }
 
-fn pick_emoji_dmenu(c: &Vec<String>, args: &Args) -> char {
+fn pick_emoji_dmenu(c: &[String], args: &Args) -> char {
     let child_stdout = if args.copy {
         std::process::Stdio::piped()
     } else {
@@ -76,12 +76,12 @@ fn send_to_clipboard(out: String) {
 
         let mut clip = arboard::Clipboard::new().unwrap();
 
-        clip.set().wait().text(out.clone()).unwrap();
+        clip.set().wait().text(out).unwrap();
     }
 }
 
 fn write_emojis_to_stdout(args: &Args, mut out: impl Write) {
-    for emoji in emoji::lookup_by_glyph::iter_emoji() {
+    for emoji in iter_emoji() {
         let native_description = emoji_description(emoji, &args.lang);
         let fallback_description = emoji_description(emoji, "en");
         let basic_description = emoji.name.to_string();
