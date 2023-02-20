@@ -4,6 +4,8 @@ use arboard::SetExtLinux;
 use clap::Parser;
 use emoji::lookup_by_glyph::iter_emoji;
 
+mod symbols;
+
 /// Simple program to list all emojis
 #[derive(Parser, Debug)]
 // #[command(author, version, about, long_about = None)]
@@ -97,6 +99,10 @@ fn write_emojis_to_stdout(args: &Args, mut out: impl Write) {
         };
 
         writeln!(&mut out, "{}: {}", emoji.glyph, text).ok();
+    }
+
+    for (c, desc) in symbols::SYMBOLS {
+        writeln!(&mut out, "{}: {}", c, desc).ok();
     }
 }
 
