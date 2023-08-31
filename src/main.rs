@@ -41,7 +41,7 @@ fn main() {
     }
 }
 
-fn pick_emoji_dmenu(c: &[String], args: &Args) -> char {
+fn pick_emoji_dmenu(c: &[String], args: &Args) -> String {
     let child_stdout = if args.copy {
         std::process::Stdio::piped()
     } else {
@@ -57,17 +57,17 @@ fn pick_emoji_dmenu(c: &[String], args: &Args) -> char {
     write_emojis_to_stdout(args, stdin);
 
     if !args.copy {
-        return ' ';
+        return " ".to_string();
     }
 
     let output = child.wait_with_output().unwrap();
-    let out = String::from_utf8_lossy(&output.stdout)
-        .chars()
-        .take(1)
+    let output = String::from_utf8_lossy(&output.stdout);
+    let out = output
+        .split(':')
         .next()
         .unwrap_or_else(|| std::process::exit(1));
 
-    out
+    out.to_string()
 }
 
 fn send_to_clipboard(out: String) {
